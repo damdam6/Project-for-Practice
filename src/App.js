@@ -1,13 +1,18 @@
-import Button from './Button';
-import styles from './App.module.css';
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Home from "./routes/Home";
+import Detail from "./routes/Detail";
+import React from "react";
+//import Movie from "./components/Movie";
 
 function App() {
   return (
- <div>
-  <h1 className={styles.title}>Welcom back!</h1>
-   <Button text={"editTest"} />
- </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
 
+        <Route path="/movie/:id" element={<Detail />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
