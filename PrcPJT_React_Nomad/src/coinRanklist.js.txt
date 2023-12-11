@@ -1,0 +1,90 @@
+{// 코인 받아오는 작업}
+
+import { useEffect, useState } from "react";
+
+function App() {
+  const [loading, setLoading] = useState(true);
+  const [coins, setCoins] = useState([]);
+  const [rankSize, setRankSize] = useState(0);
+  const [ranklistsize, setRanklistSize] = useState(0);
+
+  const [info, setInfo] = useState({});
+  const [keyforInfo, setKey] = useState(0);
+  useEffect(() => {
+    fetch("http://api.coinpaprika.com/v1/tickers")
+      .then((response) => response.json())
+      .then((json) => setCoins(json));
+    setTimeout(setLoading(false), 3000);
+  }, []);
+
+  const onSubmit = (event) => {
+    event.preventDefault();
+    setInfo({
+      name: coins[keyforInfo].name,
+      symbol: coins[keyforInfo].symbol,
+      rank: coins[keyforInfo].rank,
+      USD: coins[keyforInfo].quotes.USD.price,
+    });
+    console.log(info);
+  };
+
+  const onChange = (event) => {
+    //console.log(coins[event.target.value].name);
+    setKey(event.target.value);
+  };
+
+  const onChangeRank = (event) => {
+    //console.log(event.target.value);
+    setRankSize(event.target.value);
+  };
+  const onSubmitRank = (event) => {
+    event.preventDefault();
+    setRanklistSize(
+      rankSize < coins.length ? rankSize : coins.length + " (MAX)"
+    );
+  };
+
+  return (
+    <div>
+      <form>
+        <input
+          type="number"
+          value={rankSize}
+          placeholder="rank"
+          onChange={onChangeRank}
+        />
+        <button onClick={onSubmitRank}>SetRankSize</button>
+      </form>
+
+      <h1>The Coins RANK {ranklistsize}</h1>
+      {loading ? <strong>Loading...</strong> : null}
+
+      <form onSubmit={onSubmit}>
+        <select onChange={onChange} name="coin" id="c">
+          <option value="select">Select a coin</option>
+          {coins.map((coin, index) =>
+            coin.rank > ranklistsize ? null : (
+              <option key={index} value={index}>
+                {coin.name}
+              </option>
+            )
+          )}
+        </select>
+        <input type="submit" value="show" />
+      </form>
+      <div>
+        <ul>
+          {info && Object.keys(info).length !== 0
+            ? Object.keys(info).map((key) => (
+                <li key={key}>
+                  {key} : {info[key]}
+                </li>
+              ))
+            : null}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+export default App;
